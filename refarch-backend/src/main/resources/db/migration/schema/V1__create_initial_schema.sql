@@ -1,7 +1,7 @@
 -- Create links table
 CREATE TABLE links (
-    id SERIAL PRIMARY KEY,
-    link VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    url VARCHAR(255) NOT NULL,
     name VARCHAR(255),
     font_awesome_icon VARCHAR(255),
     mdi_icon VARCHAR(255),
@@ -13,7 +13,7 @@ CREATE TABLE links (
 
 -- Create languages table
 CREATE TABLE languages_i18n (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     abbreviation VARCHAR(255) NOT NULL,
     font_awesome_icon VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE languages_i18n (
 
 -- Create users table
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     first_name VARCHAR(255),
@@ -38,9 +38,9 @@ CREATE TABLE users (
 
 -- Create user bios table (i18n)
 CREATE TABLE user_bios_i18n (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    language_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    language_id UUID NOT NULL,
     bio TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -51,8 +51,8 @@ CREATE TABLE user_bios_i18n (
 
 -- Create pages table
 CREATE TABLE pages (
-    id SERIAL PRIMARY KEY,
-    link_id INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    link_id UUID,
     thumbnail VARCHAR(510),
     comments_enabled BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -62,9 +62,9 @@ CREATE TABLE pages (
 
 -- Create pages content table (i18n)
 CREATE TABLE pages_content_i18n (
-    id SERIAL PRIMARY KEY,
-    page_id INT NOT NULL,
-    language_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    page_id UUID NOT NULL,
+    language_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     short_description TEXT,
@@ -78,8 +78,8 @@ CREATE TABLE pages_content_i18n (
 
 -- Create posts table
 CREATE TABLE posts (
-    id SERIAL PRIMARY KEY,
-    link_id INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    link_id UUID,
     thumbnail VARCHAR(510),
     comments_enabled BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -89,9 +89,9 @@ CREATE TABLE posts (
 
 -- Create posts content table (i18n)
 CREATE TABLE posts_content_i18n (
-    id SERIAL PRIMARY KEY,
-    post_id INT NOT NULL,
-    language_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID NOT NULL,
+    language_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     short_description TEXT,
@@ -105,8 +105,8 @@ CREATE TABLE posts_content_i18n (
 
 -- Create homepage table
 CREATE TABLE homepage (
-    id SERIAL PRIMARY KEY,
-    link_id INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    link_id UUID,
     thumbnail VARCHAR(510),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -115,9 +115,9 @@ CREATE TABLE homepage (
 
 -- Create homepage content table (i18n)
 CREATE TABLE homepage_content_i18n (
-    id SERIAL PRIMARY KEY,
-    homepage_id INT NOT NULL,
-    language_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    homepage_id UUID NOT NULL,
+    language_id UUID NOT NULL,
     welcome_message TEXT NOT NULL,
     welcome_message_extended TEXT,
     explore_our_work TEXT,
@@ -136,19 +136,19 @@ CREATE TABLE homepage_content_i18n (
 
 -- Create posts_users junction table
 CREATE TABLE posts_users (
-    id SERIAL PRIMARY KEY,
-    post_link_id INT,
-    user_id INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_link_id UUID,
+    user_id UUID,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE (post_link_id, user_id)
 );
 
 -- Create comments table
 CREATE TABLE comments (
-    id SERIAL PRIMARY KEY,
-    post_id INT,
-    page_id INT,
-    user_id INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID,
+    page_id UUID,
+    user_id UUID NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
