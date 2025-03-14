@@ -2,11 +2,13 @@ package de.muenchen.refarch.link;
 
 import de.muenchen.refarch.link.dto.LinkRequestDTO;
 import de.muenchen.refarch.link.dto.LinkResponseDTO;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class LinkService {
                         link.getType(),
                         link.getScope()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Link getById(UUID id) {
+        return linkRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Link not found with id: " + id));
     }
 
     @Transactional
