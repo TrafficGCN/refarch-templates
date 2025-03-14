@@ -1,3 +1,33 @@
+-- Create default settings table
+CREATE TABLE global_settings (
+    id UUID PRIMARY KEY,
+    session_duration_minutes INTEGER NOT NULL DEFAULT 480,
+    logo_url VARCHAR(510),
+    website_name VARCHAR(255) NOT NULL,
+    global_comments_enabled BOOLEAN NOT NULL DEFAULT true,
+    maintenance_mode BOOLEAN NOT NULL DEFAULT false,
+    max_upload_size_mb INTEGER NOT NULL DEFAULT 10,
+    default_language VARCHAR(10) NOT NULL DEFAULT 'en',
+    analytics_tracking_id VARCHAR(50),
+    contact_email VARCHAR(255),
+    meta_description VARCHAR(255),
+    max_items_per_page INTEGER NOT NULL DEFAULT 20,
+    sso_enabled BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP
+);
+
+-- Insert default settings
+INSERT INTO global_settings (
+    id, 
+    website_name,
+    created_at
+) VALUES (
+    gen_random_uuid(),
+    'My Website',
+    CURRENT_TIMESTAMP
+);
+
 -- Create links table
 CREATE TABLE links (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
