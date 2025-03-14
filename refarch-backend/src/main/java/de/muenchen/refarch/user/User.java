@@ -1,9 +1,8 @@
 package de.muenchen.refarch.user;
 
 import de.muenchen.refarch.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import de.muenchen.refarch.role.Role;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -13,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity representing a user in the system.
@@ -47,6 +48,14 @@ public class User extends BaseEntity {
     private String affiliation;
 
     private String thumbnail;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
