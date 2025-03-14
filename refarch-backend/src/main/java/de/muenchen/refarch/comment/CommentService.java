@@ -1,0 +1,120 @@
+package de.muenchen.refarch.comment;
+
+import de.muenchen.refarch.comment.dto.CommentResponseDTO;
+import de.muenchen.refarch.user.User;
+import de.muenchen.refarch.user.UserRepository;
+import de.muenchen.refarch.user.dto.UserResponseDTO;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class CommentService {
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> findByPostId(UUID postId) {
+        return commentRepository.findByPostIdOrderByCreatedAtDesc(postId)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> findByPageId(UUID pageId) {
+        return commentRepository.findByPageIdOrderByCreatedAtDesc(pageId)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> findByUserId(UUID userId) {
+        return commentRepository.findByUser_Id(userId)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    @Transactional
+    public CommentResponseDTO createPostComment(UUID userId, UUID postId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setPostId(postId);
+        comment.setUser(user);
+
+        return mapToResponseDTO(commentRepository.save(comment));
+    }
+
+    @Transactional
+    public CommentResponseDTO createPageComment(UUID userId, UUID pageId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setPageId(pageId);
+        comment.setUser(user);
+
+        return mapToResponseDTO(commentRepository.save(comment));
+    }
+
+    @Transactional
+    public CommentResponseDTO updateComment(UUID commentId, UUID userId, String content) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not authorized to update this comment");
+        }
+
+        comment.setContent(content);
+
+        return mapToResponseDTO(commentRepository.save(comment));
+    }
+
+    @Transactional
+    public void deleteComment(UUID commentId, UUID userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not authorized to delete this comment");
+        }
+
+        commentRepository.delete(comment);
+    }
+
+    private CommentResponseDTO mapToResponseDTO(Comment comment) {
+        User user = comment.getUser();
+        UserResponseDTO userResponseDTO = new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getTitle(),
+                user.getAffiliation(),
+                user.getThumbnail(),
+                user.getCreatedAt(),
+                user.getUpdatedAt());
+
+        return new CommentResponseDTO(
+                comment.getId(),
+                comment.getContent(),
+                comment.getPostId(),
+                comment.getPageId(),
+                userResponseDTO,
+                comment.getCreatedAt(),
+                comment.getUpdatedAt());
+    }
+}
