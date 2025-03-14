@@ -17,7 +17,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.net.URI;
@@ -61,9 +60,6 @@ class UnicodeConfigurationTest {
 
     @Autowired
     private LinkRepository linkRepository;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Test
     void testForNfcNormalization() {
