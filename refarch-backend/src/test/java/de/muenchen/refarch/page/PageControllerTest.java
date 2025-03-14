@@ -1,4 +1,4 @@
-package de.muenchen.refarch.post;
+package de.muenchen.refarch.page;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.refarch.MicroServiceApplication;
@@ -8,11 +8,11 @@ import de.muenchen.refarch.language.LanguageService;
 import de.muenchen.refarch.link.Link;
 import de.muenchen.refarch.link.LinkScope;
 import de.muenchen.refarch.link.LinkService;
-import de.muenchen.refarch.post.content.PostContentRepository;
-import de.muenchen.refarch.post.dto.PostRequestDTO;
-import de.muenchen.refarch.post.dto.PostResponseDTO;
-import de.muenchen.refarch.post.content.dto.PostContentRequestDTO;
-import de.muenchen.refarch.post.content.dto.PostContentResponseDTO;
+import de.muenchen.refarch.page.content.PageContentRepository;
+import de.muenchen.refarch.page.dto.PageRequestDTO;
+import de.muenchen.refarch.page.dto.PageResponseDTO;
+import de.muenchen.refarch.page.content.dto.PageContentRequestDTO;
+import de.muenchen.refarch.page.content.dto.PageContentResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @ActiveProfiles(profiles = { TestConstants.SPRING_TEST_PROFILE, TestConstants.SPRING_NO_SECURITY_PROFILE })
 @AutoConfigureMockMvc
-class PostControllerTest {
+class PageControllerTest {
 
     @Container
     @ServiceConnection
@@ -76,13 +77,13 @@ class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private PostService postService;
+    private PageService pageService;
 
     @MockBean
-    private PostRepository postRepository;
+    private PageRepository pageRepository;
 
     @MockBean
-    private PostContentRepository postContentRepository;
+    private PageContentRepository pageContentRepository;
 
     @MockBean
     private LinkService linkService;
@@ -90,20 +91,20 @@ class PostControllerTest {
     @MockBean
     private LanguageService languageService;
 
-    private UUID postId;
+    private UUID pageId;
     private UUID linkId;
     private UUID languageId;
     private Link link;
     private Language language;
-    private PostRequestDTO postRequestDTO;
-    private PostResponseDTO postResponseDTO;
-    private PostContentRequestDTO contentRequestDTO;
-    private PostContentResponseDTO contentResponseDTO;
+    private PageRequestDTO pageRequestDTO;
+    private PageResponseDTO pageResponseDTO;
+    private PageContentRequestDTO contentRequestDTO;
+    private PageContentResponseDTO contentResponseDTO;
     private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
-        postId = UUID.randomUUID();
+        pageId = UUID.randomUUID();
         linkId = UUID.randomUUID();
         languageId = UUID.randomUUID();
         now = LocalDateTime.now();
@@ -119,176 +120,177 @@ class PostControllerTest {
         language.setName("English");
         language.setAbbreviation("en");
 
-        postRequestDTO = new PostRequestDTO(
+        pageRequestDTO = new PageRequestDTO(
                 linkId,
                 "thumbnail.jpg",
                 true);
 
-        postResponseDTO = new PostResponseDTO(
-                postId,
-                link,
-                "thumbnail.jpg",
-                true,
-                now,
-                now);
-
-        contentRequestDTO = new PostContentRequestDTO(
+        contentRequestDTO = new PageContentRequestDTO(
                 languageId,
                 "Test Title",
                 "Test Content",
                 "Test Description",
                 "test,keywords");
 
-        contentResponseDTO = new PostContentResponseDTO(
+        contentResponseDTO = new PageContentResponseDTO(
                 UUID.randomUUID(),
-                postId,
-                language,
+                pageId,
+                languageId,
                 "Test Title",
                 "Test Content",
                 "Test Description",
                 "test,keywords",
                 now,
                 now);
+
+        pageResponseDTO = new PageResponseDTO(
+                pageId,
+                linkId,
+                "thumbnail.jpg",
+                true,
+                Set.of(contentResponseDTO),
+                now,
+                now);
     }
 
     @Test
-    void getAllPosts_ShouldReturnListOfPosts() throws Exception {
-        when(postService.findAll()).thenReturn(List.of(postResponseDTO));
+    void getAllPages_ShouldReturnListOfPages() throws Exception {
+        when(pageService.findAll()).thenReturn(List.of(pageResponseDTO));
 
-        mockMvc.perform(get("/posts"))
+        mockMvc.perform(get("/pages"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(postId.toString()))
+                .andExpect(jsonPath("$[0].id").value(pageId.toString()))
                 .andExpect(jsonPath("$[0].thumbnail").value("thumbnail.jpg"))
                 .andExpect(jsonPath("$[0].commentsEnabled").value(true));
 
-        verify(postService).findAll();
+        verify(pageService).findAll();
     }
 
     @Test
-    void getPostById_ShouldReturnPost() throws Exception {
-        when(postService.findById(postId)).thenReturn(postResponseDTO);
+    void getPageById_ShouldReturnPage() throws Exception {
+        when(pageService.findById(pageId)).thenReturn(pageResponseDTO);
 
-        mockMvc.perform(get("/posts/{id}", postId))
+        mockMvc.perform(get("/pages/{id}", pageId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(postId.toString()))
+                .andExpect(jsonPath("$.id").value(pageId.toString()))
                 .andExpect(jsonPath("$.thumbnail").value("thumbnail.jpg"))
                 .andExpect(jsonPath("$.commentsEnabled").value(true));
 
-        verify(postService).findById(postId);
+        verify(pageService).findById(pageId);
     }
 
     @Test
-    void createPost_ShouldCreateAndReturnPost() throws Exception {
-        when(postService.create(any(PostRequestDTO.class))).thenReturn(postResponseDTO);
+    void createPage_ShouldCreateAndReturnPage() throws Exception {
+        when(pageService.create(any(PageRequestDTO.class))).thenReturn(pageResponseDTO);
 
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(post("/pages")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postRequestDTO)))
+                .content(objectMapper.writeValueAsString(pageRequestDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(postId.toString()))
+                .andExpect(jsonPath("$.id").value(pageId.toString()))
                 .andExpect(jsonPath("$.thumbnail").value("thumbnail.jpg"))
                 .andExpect(jsonPath("$.commentsEnabled").value(true));
 
-        verify(postService).create(any(PostRequestDTO.class));
+        verify(pageService).create(any(PageRequestDTO.class));
     }
 
     @Test
-    void updatePost_ShouldUpdateAndReturnPost() throws Exception {
-        when(postService.update(eq(postId), any(PostRequestDTO.class))).thenReturn(postResponseDTO);
+    void updatePage_ShouldUpdateAndReturnPage() throws Exception {
+        when(pageService.update(eq(pageId), any(PageRequestDTO.class))).thenReturn(pageResponseDTO);
 
-        mockMvc.perform(put("/posts/{id}", postId)
+        mockMvc.perform(put("/pages/{id}", pageId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(postRequestDTO)))
+                .content(objectMapper.writeValueAsString(pageRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(postId.toString()))
+                .andExpect(jsonPath("$.id").value(pageId.toString()))
                 .andExpect(jsonPath("$.thumbnail").value("thumbnail.jpg"))
                 .andExpect(jsonPath("$.commentsEnabled").value(true));
 
-        verify(postService).update(eq(postId), any(PostRequestDTO.class));
+        verify(pageService).update(eq(pageId), any(PageRequestDTO.class));
     }
 
     @Test
-    void deletePost_ShouldDeletePost() throws Exception {
-        doNothing().when(postService).delete(postId);
+    void deletePage_ShouldDeletePage() throws Exception {
+        doNothing().when(pageService).delete(pageId);
 
-        mockMvc.perform(delete("/posts/{id}", postId))
+        mockMvc.perform(delete("/pages/{id}", pageId))
                 .andExpect(status().isNoContent());
 
-        verify(postService).delete(postId);
+        verify(pageService).delete(pageId);
     }
 
     @Test
-    void getAllPostContent_ShouldReturnListOfContent() throws Exception {
-        when(postService.findAllContentByPost(postId)).thenReturn(List.of(contentResponseDTO));
+    void getAllPageContent_ShouldReturnListOfContent() throws Exception {
+        when(pageService.findAllContentByPage(pageId)).thenReturn(List.of(contentResponseDTO));
 
-        mockMvc.perform(get("/posts/{postId}/content", postId))
+        mockMvc.perform(get("/pages/{pageId}/content", pageId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].postId").value(postId.toString()))
+                .andExpect(jsonPath("$[0].pageId").value(pageId.toString()))
                 .andExpect(jsonPath("$[0].title").value("Test Title"))
                 .andExpect(jsonPath("$[0].content").value("Test Content"));
 
-        verify(postService).findAllContentByPost(postId);
+        verify(pageService).findAllContentByPage(pageId);
     }
 
     @Test
-    void getPostContent_ShouldReturnContent() throws Exception {
-        when(postService.findContentByPostAndLanguage(postId, languageId)).thenReturn(contentResponseDTO);
+    void getPageContent_ShouldReturnContent() throws Exception {
+        when(pageService.findContentByPageAndLanguage(pageId, languageId)).thenReturn(contentResponseDTO);
 
-        mockMvc.perform(get("/posts/{postId}/content/{languageId}", postId, languageId))
+        mockMvc.perform(get("/pages/{pageId}/content/{languageId}", pageId, languageId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.postId").value(postId.toString()))
+                .andExpect(jsonPath("$.pageId").value(pageId.toString()))
                 .andExpect(jsonPath("$.title").value("Test Title"))
                 .andExpect(jsonPath("$.content").value("Test Content"));
 
-        verify(postService).findContentByPostAndLanguage(postId, languageId);
+        verify(pageService).findContentByPageAndLanguage(pageId, languageId);
     }
 
     @Test
-    void createPostContent_ShouldCreateAndReturnContent() throws Exception {
-        when(postService.createContent(eq(postId), any(PostContentRequestDTO.class))).thenReturn(contentResponseDTO);
+    void createPageContent_ShouldCreateAndReturnContent() throws Exception {
+        when(pageService.createContent(eq(pageId), any(PageContentRequestDTO.class))).thenReturn(contentResponseDTO);
 
-        mockMvc.perform(post("/posts/{postId}/content", postId)
+        mockMvc.perform(post("/pages/{pageId}/content", pageId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(contentRequestDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.postId").value(postId.toString()))
+                .andExpect(jsonPath("$.pageId").value(pageId.toString()))
                 .andExpect(jsonPath("$.title").value("Test Title"))
                 .andExpect(jsonPath("$.content").value("Test Content"));
 
-        verify(postService).createContent(eq(postId), any(PostContentRequestDTO.class));
+        verify(pageService).createContent(eq(pageId), any(PageContentRequestDTO.class));
     }
 
     @Test
-    void updatePostContent_ShouldUpdateAndReturnContent() throws Exception {
-        when(postService.updateContent(eq(postId), eq(languageId), any(PostContentRequestDTO.class)))
+    void updatePageContent_ShouldUpdateAndReturnContent() throws Exception {
+        when(pageService.updateContent(eq(pageId), eq(languageId), any(PageContentRequestDTO.class)))
                 .thenReturn(contentResponseDTO);
 
-        mockMvc.perform(put("/posts/{postId}/content/{languageId}", postId, languageId)
+        mockMvc.perform(put("/pages/{pageId}/content/{languageId}", pageId, languageId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(contentRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.postId").value(postId.toString()))
+                .andExpect(jsonPath("$.pageId").value(pageId.toString()))
                 .andExpect(jsonPath("$.title").value("Test Title"))
                 .andExpect(jsonPath("$.content").value("Test Content"));
 
-        verify(postService).updateContent(eq(postId), eq(languageId), any(PostContentRequestDTO.class));
+        verify(pageService).updateContent(eq(pageId), eq(languageId), any(PageContentRequestDTO.class));
     }
 
     @Test
-    void deletePostContent_ShouldDeleteContent() throws Exception {
-        doNothing().when(postService).deleteContent(postId, languageId);
+    void deletePageContent_ShouldDeleteContent() throws Exception {
+        doNothing().when(pageService).deleteContent(pageId, languageId);
 
-        mockMvc.perform(delete("/posts/{postId}/content/{languageId}", postId, languageId))
+        mockMvc.perform(delete("/pages/{pageId}/content/{languageId}", pageId, languageId))
                 .andExpect(status().isNoContent());
 
-        verify(postService).deleteContent(postId, languageId);
+        verify(pageService).deleteContent(pageId, languageId);
     }
 }
