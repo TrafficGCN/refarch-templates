@@ -39,7 +39,7 @@ class LinkServiceTest {
         link.setFontAwesomeIcon("fa-link");
         link.setMdiIcon("mdi-link");
         link.setType("external");
-        link.setScope(LinkScope.EXTERNAL);
+        link.setScope(LinkScope.external);
 
         requestDTO = new LinkRequestDTO(
                 "https://example.com",
@@ -47,7 +47,7 @@ class LinkServiceTest {
                 "fa-link",
                 "mdi-link",
                 "external",
-                LinkScope.EXTERNAL);
+                LinkScope.external);
 
         responseDTO = new LinkResponseDTO(
                 linkId,
@@ -56,7 +56,7 @@ class LinkServiceTest {
                 "fa-link",
                 "mdi-link",
                 "external",
-                LinkScope.EXTERNAL);
+                LinkScope.external);
     }
 
     @Test

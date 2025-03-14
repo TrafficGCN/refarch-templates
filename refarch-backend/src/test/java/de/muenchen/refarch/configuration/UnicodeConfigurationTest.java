@@ -75,7 +75,7 @@ class UnicodeConfigurationTest {
                 null,
                 null,
                 "test",
-                LinkScope.INTERNAL);
+                LinkScope.internal);
 
         // When
         final LinkResponseDTO response = testRestTemplate.postForEntity(URI.create(LINK_ENDPOINT_URL), linkRequestDto, LinkResponseDTO.class)
