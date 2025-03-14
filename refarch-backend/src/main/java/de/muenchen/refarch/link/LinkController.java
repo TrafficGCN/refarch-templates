@@ -2,6 +2,7 @@ package de.muenchen.refarch.link;
 
 import de.muenchen.refarch.link.dto.LinkRequestDTO;
 import de.muenchen.refarch.link.dto.LinkResponseDTO;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,7 @@ public class LinkController {
     }
 
     @PostMapping
-    public ResponseEntity<LinkResponseDTO> createLink(@RequestBody final LinkRequestDTO request) {
+    public ResponseEntity<LinkResponseDTO> createLink(@Valid @RequestBody final LinkRequestDTO request) {
         return ResponseEntity.ok(linkService.createLink(request));
     }
 }

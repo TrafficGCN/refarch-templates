@@ -1,40 +1,36 @@
 package de.muenchen.refarch.language;
 
+import de.muenchen.refarch.common.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "languages_i18n")
 @Getter
 @Setter
-public class Language {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Language extends BaseEntity implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @NotBlank
     @Column(nullable = false)
     private String name;
 
+    @NotBlank
     @Column(nullable = false)
     private String abbreviation;
 
+    @NotBlank
     @Column(name = "font_awesome_icon", nullable = false)
     private String fontAwesomeIcon;
 
+    @NotBlank
     @Column(name = "mdi_icon", nullable = false)
     private String mdiIcon;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }
