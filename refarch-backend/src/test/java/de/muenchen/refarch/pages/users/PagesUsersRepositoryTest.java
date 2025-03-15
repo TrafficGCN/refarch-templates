@@ -45,6 +45,7 @@ class PagesUsersRepositoryTest {
         user = new User();
         user.setUsername("testuser");
         user.setEmail("test@example.com");
+        user.setPassword("password123");
         entityManager.persist(user);
 
         // Create a page link ID

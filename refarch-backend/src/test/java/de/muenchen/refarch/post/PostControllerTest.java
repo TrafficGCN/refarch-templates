@@ -122,12 +122,14 @@ class PostControllerTest {
         postRequestDTO = new PostRequestDTO(
                 linkId,
                 "thumbnail.jpg",
+                true,
                 true);
 
         postResponseDTO = new PostResponseDTO(
                 postId,
                 link,
                 "thumbnail.jpg",
+                true,
                 true,
                 now,
                 now);

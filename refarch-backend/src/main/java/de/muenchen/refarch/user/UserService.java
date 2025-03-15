@@ -43,6 +43,7 @@ public class UserService {
         final User user = new User();
         user.setUsername(request.username());
         user.setEmail(request.email());
+        user.setPassword(request.password());
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
         user.setTitle(request.title());
@@ -74,6 +75,7 @@ public class UserService {
         updatedUser.setUpdatedAt(user.getUpdatedAt());
         updatedUser.setUsername(user.getUsername());
         updatedUser.setEmail(user.getEmail());
+        updatedUser.setPassword(user.getPassword());
         updatedUser.setFirstName(user.getFirstName());
         updatedUser.setLastName(user.getLastName());
         updatedUser.setTitle(user.getTitle());
@@ -89,6 +91,10 @@ public class UserService {
         }
         if (!requestDTO.email().equals(user.getEmail())) {
             updatedUser.setEmail(requestDTO.email());
+            hasChanges = true;
+        }
+        if (!Objects.equals(requestDTO.password(), user.getPassword()) && requestDTO.password() != null) {
+            updatedUser.setPassword(requestDTO.password());
             hasChanges = true;
         }
         if (!Objects.equals(requestDTO.firstName(), user.getFirstName())) {

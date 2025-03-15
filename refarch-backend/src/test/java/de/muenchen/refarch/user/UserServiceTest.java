@@ -41,6 +41,7 @@ class UserServiceTest {
         user.setId(userId);
         user.setUsername("testuser");
         user.setEmail("test@example.com");
+        user.setPassword("testPassword123");
         user.setFirstName("Test");
         user.setLastName("User");
         user.setTitle("Dr.");
@@ -52,6 +53,7 @@ class UserServiceTest {
         requestDTO = new UserRequestDTO(
                 "testuser",
                 "test@example.com",
+                "testPassword123",
                 "Test",
                 "User",
                 "Dr.",
@@ -147,6 +149,7 @@ class UserServiceTest {
         UserRequestDTO updateRequest = new UserRequestDTO(
                 "newusername",
                 "newemail@example.com",
+                "testPassword123",
                 requestDTO.firstName(),
                 requestDTO.lastName(),
                 requestDTO.title(),
@@ -186,6 +189,7 @@ class UserServiceTest {
         UserRequestDTO updateRequest = new UserRequestDTO(
                 "newusername",
                 requestDTO.email(),
+                "testPassword123",
                 requestDTO.firstName(),
                 requestDTO.lastName(),
                 requestDTO.title(),
@@ -210,6 +214,7 @@ class UserServiceTest {
         UserRequestDTO updateRequest = new UserRequestDTO(
                 requestDTO.username(),
                 "newemail@example.com",
+                "testPassword123",
                 requestDTO.firstName(),
                 requestDTO.lastName(),
                 requestDTO.title(),

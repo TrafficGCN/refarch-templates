@@ -33,6 +33,9 @@ public class Page {
     @Column(name = "comments_enabled")
     private boolean commentsEnabled = true;
 
+    @Column(name = "published")
+    private boolean published = false;
+
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PageContent> contents = new HashSet<>();
 

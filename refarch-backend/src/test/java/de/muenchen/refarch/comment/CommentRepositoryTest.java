@@ -48,11 +48,13 @@ public class CommentRepositoryTest {
         user1 = new User();
         user1.setUsername("user1");
         user1.setEmail("user1@example.com");
+        user1.setPassword("password123");
         entityManager.persist(user1);
 
         user2 = new User();
         user2.setUsername("user2");
         user2.setEmail("user2@example.com");
+        user2.setPassword("password123");
         entityManager.persist(user2);
 
         // Create posts

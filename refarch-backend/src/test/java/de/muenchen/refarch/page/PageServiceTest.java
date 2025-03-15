@@ -98,6 +98,7 @@ class PageServiceTest {
         pageRequestDTO = new PageRequestDTO(
                 linkId,
                 "thumbnail.jpg",
+                true,
                 true);
 
         contentRequestDTO = new PageContentRequestDTO(

@@ -81,4 +81,14 @@ public class PageController {
         pageService.deleteContent(pageId, languageId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/publish")
+    public ResponseEntity<PageResponseDTO> publishPage(@PathVariable final UUID id) {
+        return ResponseEntity.ok(pageService.setPublished(id, true));
+    }
+
+    @PutMapping("/{id}/unpublish")
+    public ResponseEntity<PageResponseDTO> unpublishPage(@PathVariable final UUID id) {
+        return ResponseEntity.ok(pageService.setPublished(id, false));
+    }
 }

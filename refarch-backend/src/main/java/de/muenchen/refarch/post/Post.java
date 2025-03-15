@@ -31,6 +31,9 @@ public class Post extends BaseEntity implements Serializable {
     @Column(name = "comments_enabled")
     private boolean commentsEnabled = true;
 
+    @Column(name = "published")
+    private boolean published = false;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostContent> contents = new HashSet<>();
 

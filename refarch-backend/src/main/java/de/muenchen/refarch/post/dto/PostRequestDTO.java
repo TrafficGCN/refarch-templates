@@ -8,5 +8,7 @@ public record PostRequestDTO(
 
         String thumbnail,
 
-        @NotNull(message = "Comments enabled flag is required") Boolean commentsEnabled) {
+        @NotNull(message = "Comments enabled flag is required") Boolean commentsEnabled,
+
+        @NotNull(message = "Published flag is required") Boolean published) {
 }

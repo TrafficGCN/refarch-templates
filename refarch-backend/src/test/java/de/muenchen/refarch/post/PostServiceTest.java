@@ -94,6 +94,7 @@ class PostServiceTest {
         postRequestDTO = new PostRequestDTO(
                 linkId,
                 "thumbnail.jpg",
+                true,
                 true);
 
         contentRequestDTO = new PostContentRequestDTO(

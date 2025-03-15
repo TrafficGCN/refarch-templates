@@ -10,6 +10,7 @@ public record PageResponseDTO(
         UUID linkId,
         String thumbnail,
         boolean commentsEnabled,
+        boolean published,
         Set<PageContentResponseDTO> contents,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {

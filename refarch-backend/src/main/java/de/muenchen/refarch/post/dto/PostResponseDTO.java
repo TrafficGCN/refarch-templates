@@ -9,6 +9,7 @@ public record PostResponseDTO(
         Link link,
         String thumbnail,
         boolean commentsEnabled,
+        boolean published,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

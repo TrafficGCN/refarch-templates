@@ -57,6 +57,7 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     title VARCHAR(255),
@@ -85,6 +86,7 @@ CREATE TABLE pages (
     link_id UUID,
     thumbnail VARCHAR(510),
     comments_enabled BOOLEAN DEFAULT TRUE,
+    published BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE
@@ -112,6 +114,7 @@ CREATE TABLE posts (
     link_id UUID,
     thumbnail VARCHAR(510),
     comments_enabled BOOLEAN DEFAULT TRUE,
+    published BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE

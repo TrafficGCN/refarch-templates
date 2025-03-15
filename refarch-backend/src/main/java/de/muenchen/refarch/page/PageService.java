@@ -49,6 +49,7 @@ public class PageService {
         page.setLink(link);
         page.setThumbnail(request.thumbnail());
         page.setCommentsEnabled(request.commentsEnabled());
+        page.setPublished(request.published());
 
         return mapToResponseDTO(pageRepository.save(page));
     }
@@ -62,6 +63,7 @@ public class PageService {
         existingPage.setLink(link);
         existingPage.setThumbnail(request.thumbnail());
         existingPage.setCommentsEnabled(request.commentsEnabled());
+        existingPage.setPublished(request.published());
 
         return mapToResponseDTO(pageRepository.save(existingPage));
     }
@@ -140,12 +142,21 @@ public class PageService {
         pageContentRepository.delete(content);
     }
 
+    @Transactional
+    public PageResponseDTO setPublished(UUID id, boolean published) {
+        Page page = pageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Page not found with id: " + id));
+        page.setPublished(published);
+        return mapToResponseDTO(pageRepository.save(page));
+    }
+
     private PageResponseDTO mapToResponseDTO(Page page) {
         return new PageResponseDTO(
                 page.getId(),
                 page.getLink().getId(),
                 page.getThumbnail(),
                 page.isCommentsEnabled(),
+                page.isPublished(),
                 page.getContents().stream()
                         .map(this::mapToContentResponseDTO)
                         .collect(Collectors.toSet()),

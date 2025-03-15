@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
@@ -36,6 +37,11 @@ public class User extends BaseEntity {
     @Email
     @Column(nullable = false)
     private String email;
+
+    @NotBlank
+    @Column(nullable = false)
+    @JsonIgnore // Never serialize the password
+    private String password;
 
     @Column(name = "first_name")
     private String firstName;

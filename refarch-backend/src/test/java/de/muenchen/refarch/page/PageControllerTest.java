@@ -123,6 +123,7 @@ class PageControllerTest {
         pageRequestDTO = new PageRequestDTO(
                 linkId,
                 "thumbnail.jpg",
+                true,
                 true);
 
         contentRequestDTO = new PageContentRequestDTO(
@@ -147,6 +148,7 @@ class PageControllerTest {
                 pageId,
                 linkId,
                 "thumbnail.jpg",
+                true,
                 true,
                 Set.of(contentResponseDTO),
                 now,

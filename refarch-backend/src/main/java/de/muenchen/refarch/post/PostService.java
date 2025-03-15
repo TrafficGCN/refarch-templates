@@ -49,6 +49,7 @@ public class PostService {
         post.setLink(link);
         post.setThumbnail(request.thumbnail());
         post.setCommentsEnabled(request.commentsEnabled());
+        post.setPublished(request.published());
 
         return mapToResponseDTO(postRepository.save(post));
     }
@@ -62,6 +63,7 @@ public class PostService {
         existingPost.setLink(link);
         existingPost.setThumbnail(request.thumbnail());
         existingPost.setCommentsEnabled(request.commentsEnabled());
+        existingPost.setPublished(request.published());
 
         return mapToResponseDTO(postRepository.save(existingPost));
     }
@@ -149,12 +151,21 @@ public class PostService {
         postContentRepository.delete(content);
     }
 
+    @Transactional
+    public PostResponseDTO setPublished(UUID id, boolean published) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + id));
+        post.setPublished(published);
+        return mapToResponseDTO(postRepository.save(post));
+    }
+
     private PostResponseDTO mapToResponseDTO(Post post) {
         return new PostResponseDTO(
                 post.getId(),
                 post.getLink(),
                 post.getThumbnail(),
                 post.isCommentsEnabled(),
+                post.isPublished(),
                 post.getCreatedAt(),
                 post.getUpdatedAt());
     }

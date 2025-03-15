@@ -81,4 +81,14 @@ public class PostController {
         postService.deleteContent(postId, languageId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/publish")
+    public ResponseEntity<PostResponseDTO> publishPost(@PathVariable final UUID id) {
+        return ResponseEntity.ok(postService.setPublished(id, true));
+    }
+
+    @PutMapping("/{id}/unpublish")
+    public ResponseEntity<PostResponseDTO> unpublishPost(@PathVariable final UUID id) {
+        return ResponseEntity.ok(postService.setPublished(id, false));
+    }
 }
