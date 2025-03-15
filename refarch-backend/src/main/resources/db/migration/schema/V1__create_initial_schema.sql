@@ -231,3 +231,26 @@ INSERT INTO roles (name) VALUES
     ('ROLE_USER'),
     ('ROLE_EDITOR'),
     ('ROLE_MODERATOR'); 
+
+-- Create user_sessions table
+CREATE TABLE user_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    refresh_token VARCHAR(255),
+    expires_at TIMESTAMP NOT NULL,
+    last_activity_at TIMESTAMP NOT NULL,
+    ip_address VARCHAR(45),
+    user_agent VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (token),
+    UNIQUE (refresh_token)
+);
+
+-- Create indexes for faster lookups
+CREATE INDEX idx_user_sessions_token ON user_sessions(token);
+CREATE INDEX idx_user_sessions_refresh_token ON user_sessions(refresh_token);
+CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX idx_user_sessions_expires_at ON user_sessions(expires_at);

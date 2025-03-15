@@ -63,6 +63,12 @@ public final class Authorities {
     public static final String POSTS_USERS_READ = "permitAll()";
     public static final String POSTS_USERS_WRITE = "hasAnyRole('ROLE_ADMIN', 'ROLE_EDITOR')";
 
+    // Session management
+    public static final String SESSION_READ = "hasAnyRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)";
+    public static final String SESSION_WRITE = "hasAnyRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)";
+    public static final String SESSION_DELETE = "hasAnyRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)";
+    public static final String SESSION_ADMIN = "hasRole('ROLE_ADMIN')";
+
     private Authorities() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }

@@ -2,7 +2,6 @@ package de.muenchen.refarch.posts.users;
 
 import de.muenchen.refarch.user.User;
 import de.muenchen.refarch.TestConstants;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
