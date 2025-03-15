@@ -1,6 +1,9 @@
 package de.muenchen.refarch.configuration;
 
+import de.muenchen.refarch.security.DynamicAuthenticationFilter;
+import de.muenchen.refarch.security.DynamicSecurityService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -26,16 +30,22 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 @Import(RestTemplateAutoConfiguration.class)
+@Slf4j
 public class SecurityConfiguration {
 
     private final RestTemplateBuilder restTemplateBuilder;
-
     private final SecurityProperties securityProperties;
+    private final DynamicAuthenticationFilter dynamicAuthenticationFilter;
+    private final DynamicSecurityService dynamicSecurityService;
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(
+        // Add our dynamic filter first
+        http.addFilterBefore(dynamicAuthenticationFilter, BasicAuthenticationFilter.class);
+
+        // Configure basic security
+        http.authorizeHttpRequests(requests -> requests
+                .requestMatchers(
                         // allow access to /actuator/info
                         AntPathRequestMatcher.antMatcher("/actuator/info"),
                         // allow access to /actuator/health for OpenShift Health Check
@@ -46,12 +56,27 @@ public class SecurityConfiguration {
                         AntPathRequestMatcher.antMatcher("/actuator/health/readiness"),
                         // allow access to /actuator/metrics for Prometheus monitoring in OpenShift
                         AntPathRequestMatcher.antMatcher("/actuator/metrics"))
-                        .permitAll())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers("/**")
-                        .authenticated())
-                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer
-                        .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(new JwtUserInfoAuthenticationConverter(
-                                new UserInfoAuthoritiesService(securityProperties.getUserInfoUri(), restTemplateBuilder)))));
+                .permitAll()
+                // Let our filter handle authentication dynamically
+                .anyRequest()
+                .authenticated());
+
+        // Configure OAuth2 but make it optional
+        http.oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(
+                        new JwtUserInfoAuthenticationConverter(
+                                new UserInfoAuthoritiesService(securityProperties.getUserInfoUri(), restTemplateBuilder))))
+                .bearerTokenResolver(request -> {
+                    // Only process bearer tokens if SSO is enabled
+                    if (!dynamicSecurityService.isSsoEnabled()) {
+                        return null;
+                    }
+                    String authorization = request.getHeader("Authorization");
+                    if (authorization != null && authorization.startsWith("Bearer ")) {
+                        return authorization.substring(7);
+                    }
+                    return null;
+                }));
 
         return http.build();
     }

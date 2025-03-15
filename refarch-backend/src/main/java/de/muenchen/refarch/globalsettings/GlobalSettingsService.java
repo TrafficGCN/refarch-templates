@@ -2,8 +2,10 @@ package de.muenchen.refarch.globalsettings;
 
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsRequestDTO;
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsResponseDTO;
+import de.muenchen.refarch.security.DynamicSecurityService.GlobalSettingsChangedEvent;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GlobalSettingsService {
     private final GlobalSettingsRepository globalSettingsRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public GlobalSettingsResponseDTO getCurrentSettings() {
@@ -41,7 +44,9 @@ public class GlobalSettingsService {
         settings.setMaxItemsPerPage(request.maxItemsPerPage());
         settings.setSsoEnabled(request.ssoEnabled());
 
-        return mapToResponseDTO(globalSettingsRepository.save(settings));
+        GlobalSettings savedSettings = globalSettingsRepository.save(settings);
+        eventPublisher.publishEvent(new GlobalSettingsChangedEvent(savedSettings));
+        return mapToResponseDTO(savedSettings);
     }
 
     private GlobalSettingsResponseDTO mapToResponseDTO(GlobalSettings settings) {

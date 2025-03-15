@@ -3,6 +3,7 @@ package de.muenchen.refarch.language;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.refarch.MicroServiceApplication;
 import de.muenchen.refarch.TestConstants;
+import de.muenchen.refarch.config.TestConfig;
 import de.muenchen.refarch.language.dto.LanguageRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,19 +12,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @ActiveProfiles(profiles = { TestConstants.SPRING_TEST_PROFILE, TestConstants.SPRING_NO_SECURITY_PROFILE })
 @AutoConfigureMockMvc
+@Import(TestConfig.class)
 class LanguageControllerTest {
 
     @Container
@@ -47,17 +46,6 @@ class LanguageControllerTest {
     @SuppressWarnings("unused")
     private static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName.parse(TestConstants.TESTCONTAINERS_POSTGRES_IMAGE));
-
-    @Configuration
-    @EnableWebMvc
-    static class TestConfig {
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-            http.csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-            return http.build();
-        }
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,13 +56,24 @@ class LanguageControllerTest {
     @MockBean
     private LanguageService languageService;
 
+    @MockBean
+    private LanguageRepository languageRepository;
+
     private UUID languageId;
+    private LanguageRequestDTO languageRequestDTO;
     private Language language;
-    private LanguageRequestDTO requestDTO;
+    private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
         languageId = UUID.randomUUID();
+        now = LocalDateTime.now();
+
+        languageRequestDTO = new LanguageRequestDTO(
+                "English",
+                "en",
+                "fa-flag-usa",
+                "mdi-flag");
 
         language = new Language();
         language.setId(languageId);
@@ -82,12 +81,6 @@ class LanguageControllerTest {
         language.setAbbreviation("en");
         language.setFontAwesomeIcon("fa-flag-usa");
         language.setMdiIcon("mdi-flag");
-
-        requestDTO = new LanguageRequestDTO(
-                "English",
-                "en",
-                "fa-flag-usa",
-                "mdi-flag");
     }
 
     @Test
@@ -128,7 +121,7 @@ class LanguageControllerTest {
 
         mockMvc.perform(post("/languages")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDTO)))
+                .content(objectMapper.writeValueAsString(languageRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(languageId.toString()))
@@ -162,7 +155,7 @@ class LanguageControllerTest {
 
         mockMvc.perform(put("/languages/{id}", languageId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDTO)))
+                .content(objectMapper.writeValueAsString(languageRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(languageId.toString()))

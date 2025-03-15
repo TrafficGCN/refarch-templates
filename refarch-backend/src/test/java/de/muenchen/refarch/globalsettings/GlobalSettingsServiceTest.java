@@ -2,6 +2,7 @@ package de.muenchen.refarch.globalsettings;
 
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsRequestDTO;
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsResponseDTO;
+import de.muenchen.refarch.security.DynamicSecurityService.GlobalSettingsChangedEvent;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +28,9 @@ class GlobalSettingsServiceTest {
 
     @Mock
     private GlobalSettingsRepository globalSettingsRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private GlobalSettingsService globalSettingsService;
@@ -112,6 +118,7 @@ class GlobalSettingsServiceTest {
         assertThat(result.id()).isEqualTo(settingsId);
         assertThat(result.websiteName()).isEqualTo("Test Website");
         assertThat(result.sessionDurationMinutes()).isEqualTo(480);
+        verify(eventPublisher).publishEvent(any(GlobalSettingsChangedEvent.class));
     }
 
     @Test
@@ -124,5 +131,6 @@ class GlobalSettingsServiceTest {
         assertThat(result.id()).isEqualTo(settingsId);
         assertThat(result.websiteName()).isEqualTo("Test Website");
         assertThat(result.sessionDurationMinutes()).isEqualTo(480);
+        verify(eventPublisher).publishEvent(any(GlobalSettingsChangedEvent.class));
     }
 }

@@ -10,11 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 @SuppressWarnings("PMD.DataClass")
 public final class Authorities {
-    public static final String THEENTITY_GET = "hasAnyRole('reader', 'writer')";
-    public static final String THEENTITY_GET_ALL = "hasAnyRole('reader', 'writer')";
-    public static final String THEENTITY_CREATE = "hasAnyRole('writer')";
-    public static final String THEENTITY_UPDATE = "hasAnyRole('writer')";
-    public static final String THEENTITY_DELETE = "hasAnyRole('writer')";
+    // Link management
+    public static final String LINK_READ = "permitAll()"; // Everyone can read
+    public static final String LINK_WRITE = "hasRole('ROLE_ADMIN')"; // Only admin can write/modify
 
     private Authorities() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
