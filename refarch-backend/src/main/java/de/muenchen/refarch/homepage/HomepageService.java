@@ -10,8 +10,10 @@ import de.muenchen.refarch.language.Language;
 import de.muenchen.refarch.language.LanguageService;
 import de.muenchen.refarch.link.Link;
 import de.muenchen.refarch.link.LinkService;
+import de.muenchen.refarch.security.Authorities;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class HomepageService {
     private final LinkService linkService;
     private final LanguageService languageService;
 
+    @PreAuthorize(Authorities.HOMEPAGE_READ)
     @Transactional(readOnly = true)
     public List<HomepageResponseDTO> findAll() {
         return homepageRepository.findAll().stream()
@@ -36,6 +39,7 @@ public class HomepageService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_READ)
     @Transactional(readOnly = true)
     public HomepageResponseDTO findById(UUID id) {
         return homepageRepository.findById(id)
@@ -43,6 +47,7 @@ public class HomepageService {
                 .orElseThrow(() -> new EntityNotFoundException("Homepage not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public HomepageResponseDTO create(HomepageRequestDTO requestDTO) {
         Link link = linkService.getById(requestDTO.linkId());
         Homepage homepage = new Homepage();
@@ -51,6 +56,7 @@ public class HomepageService {
         return toHomepageResponseDTO(homepageRepository.save(homepage));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public HomepageResponseDTO update(UUID id, HomepageRequestDTO requestDTO) {
         Homepage homepage = homepageRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Homepage not found with id: " + id));
@@ -60,6 +66,7 @@ public class HomepageService {
         return toHomepageResponseDTO(homepageRepository.save(homepage));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public void delete(UUID id) {
         Homepage homepage = homepageRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Homepage not found with id: " + id));
@@ -67,6 +74,7 @@ public class HomepageService {
         homepageRepository.delete(homepage);
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_READ)
     @Transactional(readOnly = true)
     public List<HomepageContentResponseDTO> findAllContentByHomepage(UUID homepageId) {
         Homepage homepage = homepageRepository.findById(homepageId)
@@ -76,6 +84,7 @@ public class HomepageService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_READ)
     @Transactional(readOnly = true)
     public HomepageContentResponseDTO findContentByHomepageAndLanguage(UUID homepageId, UUID languageId) {
         return homepageContentRepository.findByHomepageIdAndLanguageId(homepageId, languageId)
@@ -84,6 +93,7 @@ public class HomepageService {
                         String.format("Content not found for homepage %s and language %s", homepageId, languageId)));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public HomepageContentResponseDTO createContent(UUID homepageId, HomepageContentRequestDTO requestDTO) {
         Homepage homepage = homepageRepository.findById(homepageId)
                 .orElseThrow(() -> new EntityNotFoundException("Homepage not found with id: " + homepageId));
@@ -104,6 +114,7 @@ public class HomepageService {
         return toHomepageContentResponseDTO(homepageContentRepository.save(content));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public HomepageContentResponseDTO updateContent(UUID homepageId, UUID languageId,
             HomepageContentRequestDTO requestDTO) {
         HomepageContent content = homepageContentRepository.findByHomepageIdAndLanguageId(homepageId, languageId)
@@ -114,6 +125,7 @@ public class HomepageService {
         return toHomepageContentResponseDTO(homepageContentRepository.save(content));
     }
 
+    @PreAuthorize(Authorities.HOMEPAGE_WRITE)
     public void deleteContent(UUID homepageId, UUID languageId) {
         Homepage homepage = homepageRepository.findById(homepageId)
                 .orElseThrow(() -> new EntityNotFoundException("Homepage not found with id: " + homepageId));

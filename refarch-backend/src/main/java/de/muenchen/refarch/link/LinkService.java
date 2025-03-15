@@ -26,6 +26,7 @@ public class LinkService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.LINK_READ)
     @Transactional(readOnly = true)
     public Link getById(UUID id) {
         return linkRepository.findById(id)
@@ -44,6 +45,29 @@ public class LinkService {
         link.setType(request.type());
 
         return mapToResponseDTO(linkRepository.save(link));
+    }
+
+    @PreAuthorize(Authorities.LINK_WRITE)
+    @Transactional
+    public LinkResponseDTO updateLink(UUID id, LinkRequestDTO request) {
+        Link link = getById(id);
+        link.setName(request.name());
+        link.setUrl(request.link());
+        link.setScope(request.scope());
+        link.setFontAwesomeIcon(request.fontAwesomeIcon());
+        link.setMdiIcon(request.mdiIcon());
+        link.setType(request.type());
+
+        return mapToResponseDTO(linkRepository.save(link));
+    }
+
+    @PreAuthorize(Authorities.LINK_WRITE)
+    @Transactional
+    public void deleteLink(UUID id) {
+        if (!linkRepository.existsById(id)) {
+            throw new EntityNotFoundException("Link not found with id: " + id);
+        }
+        linkRepository.deleteById(id);
     }
 
     private LinkResponseDTO mapToResponseDTO(final Link link) {

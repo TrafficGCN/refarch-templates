@@ -2,10 +2,12 @@ package de.muenchen.refarch.globalsettings;
 
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsRequestDTO;
 import de.muenchen.refarch.globalsettings.dto.GlobalSettingsResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import de.muenchen.refarch.security.DynamicSecurityService.GlobalSettingsChangedEvent;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ public class GlobalSettingsService {
     private final GlobalSettingsRepository globalSettingsRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @PreAuthorize(Authorities.SETTINGS_READ)
     @Transactional(readOnly = true)
     public GlobalSettingsResponseDTO getCurrentSettings() {
         return globalSettingsRepository.findAll().stream()
@@ -23,6 +26,7 @@ public class GlobalSettingsService {
                 .orElseThrow(() -> new EntityNotFoundException("Global settings not found"));
     }
 
+    @PreAuthorize(Authorities.SETTINGS_WRITE)
     @Transactional
     public GlobalSettingsResponseDTO updateSettings(GlobalSettingsRequestDTO request) {
         GlobalSettings settings = globalSettingsRepository.findAll().stream()

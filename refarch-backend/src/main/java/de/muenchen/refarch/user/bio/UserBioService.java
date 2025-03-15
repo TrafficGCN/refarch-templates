@@ -2,12 +2,14 @@ package de.muenchen.refarch.user.bio;
 
 import de.muenchen.refarch.language.Language;
 import de.muenchen.refarch.language.LanguageRepository;
+import de.muenchen.refarch.security.Authorities;
 import de.muenchen.refarch.user.User;
 import de.muenchen.refarch.user.UserRepository;
 import de.muenchen.refarch.user.bio.dto.UserBioRequestDTO;
 import de.muenchen.refarch.user.bio.dto.UserBioResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ public class UserBioService {
     private final UserRepository userRepository;
     private final LanguageRepository languageRepository;
 
+    @PreAuthorize(Authorities.USER_BIO_READ)
     @Transactional(readOnly = true)
     public List<UserBioResponseDTO> getAllUserBios() {
         return userBioRepository.findAll().stream()
@@ -28,6 +31,7 @@ public class UserBioService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.USER_BIO_READ)
     @Transactional(readOnly = true)
     public UserBioResponseDTO getUserBioById(final UUID id) {
         return userBioRepository.findById(id)
@@ -35,6 +39,7 @@ public class UserBioService {
                 .orElseThrow(() -> new EntityNotFoundException("User bio not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.USER_BIO_READ)
     @Transactional(readOnly = true)
     public UserBioResponseDTO getUserBioByUserIdAndLanguageId(final UUID userId, final UUID languageId) {
         return userBioRepository.findByUserIdAndLanguageId(userId, languageId)
@@ -43,6 +48,7 @@ public class UserBioService {
                         String.format("User bio not found for user %s and language %s", userId, languageId)));
     }
 
+    @PreAuthorize(Authorities.USER_BIO_WRITE)
     @Transactional
     public UserBioResponseDTO createUserBio(final UserBioRequestDTO request) {
         if (userBioRepository.existsByUserIdAndLanguageId(request.userId(), request.languageId())) {
@@ -64,6 +70,7 @@ public class UserBioService {
         return mapToResponseDTO(userBioRepository.save(userBio));
     }
 
+    @PreAuthorize(Authorities.USER_BIO_WRITE)
     @Transactional
     public UserBioResponseDTO updateUserBio(UUID id, UserBioRequestDTO requestDTO) {
         UserBio userBio = userBioRepository.findById(id)
@@ -93,11 +100,9 @@ public class UserBioService {
         return mapToResponseDTO(savedBio);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)")
     @Transactional
     public void deleteUserBio(final UUID id) {
-        if (!userBioRepository.existsById(id)) {
-            throw new EntityNotFoundException("User bio not found with id: " + id);
-        }
         userBioRepository.deleteById(id);
     }
 

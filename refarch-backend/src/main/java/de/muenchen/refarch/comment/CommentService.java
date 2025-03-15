@@ -1,11 +1,13 @@
 package de.muenchen.refarch.comment;
 
 import de.muenchen.refarch.comment.dto.CommentResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import de.muenchen.refarch.user.User;
 import de.muenchen.refarch.user.UserRepository;
 import de.muenchen.refarch.user.dto.UserResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
+    @PreAuthorize(Authorities.COMMENT_READ)
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> findByPostId(UUID postId) {
         return commentRepository.findByPostIdOrderByCreatedAtDesc(postId)
@@ -26,6 +29,7 @@ public class CommentService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.COMMENT_READ)
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> findByPageId(UUID pageId) {
         return commentRepository.findByPageIdOrderByCreatedAtDesc(pageId)
@@ -34,6 +38,7 @@ public class CommentService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.COMMENT_READ)
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> findByUserId(UUID userId) {
         return commentRepository.findByUser_Id(userId)
@@ -42,6 +47,7 @@ public class CommentService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.COMMENT_WRITE)
     @Transactional
     public CommentResponseDTO createPostComment(UUID userId, UUID postId, String content) {
         User user = userRepository.findById(userId)
@@ -55,6 +61,7 @@ public class CommentService {
         return mapToResponseDTO(commentRepository.save(comment));
     }
 
+    @PreAuthorize(Authorities.COMMENT_WRITE)
     @Transactional
     public CommentResponseDTO createPageComment(UUID userId, UUID pageId, String content) {
         User user = userRepository.findById(userId)
@@ -68,6 +75,7 @@ public class CommentService {
         return mapToResponseDTO(commentRepository.save(comment));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)")
     @Transactional
     public CommentResponseDTO updateComment(UUID commentId, UUID userId, String content) {
         Comment comment = commentRepository.findById(commentId)
@@ -82,6 +90,7 @@ public class CommentService {
         return mapToResponseDTO(commentRepository.save(comment));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)")
     @Transactional
     public void deleteComment(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId)

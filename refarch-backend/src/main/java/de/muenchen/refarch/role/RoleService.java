@@ -2,8 +2,10 @@ package de.muenchen.refarch.role;
 
 import de.muenchen.refarch.role.dto.RoleRequestDTO;
 import de.muenchen.refarch.role.dto.RoleResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 public class RoleService {
     private final RoleRepository roleRepository;
 
+    @PreAuthorize(Authorities.ROLE_READ)
     @Transactional(readOnly = true)
     public List<RoleResponseDTO> getAllRoles() {
         return roleRepository.findAll().stream()
@@ -22,6 +25,7 @@ public class RoleService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.ROLE_READ)
     @Transactional(readOnly = true)
     public RoleResponseDTO getRoleById(final UUID id) {
         return roleRepository.findById(id)
@@ -29,6 +33,7 @@ public class RoleService {
                 .orElseThrow(() -> new EntityNotFoundException("Role not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.ROLE_READ)
     @Transactional(readOnly = true)
     public RoleResponseDTO getRoleByName(final String name) {
         return roleRepository.findByName(name)
@@ -36,6 +41,7 @@ public class RoleService {
                 .orElseThrow(() -> new EntityNotFoundException("Role not found with name: " + name));
     }
 
+    @PreAuthorize(Authorities.ROLE_WRITE)
     @Transactional
     public RoleResponseDTO createRole(final RoleRequestDTO request) {
         if (roleRepository.existsByName(request.name())) {
@@ -48,6 +54,7 @@ public class RoleService {
         return mapToResponseDTO(roleRepository.save(role));
     }
 
+    @PreAuthorize(Authorities.ROLE_WRITE)
     @Transactional
     public RoleResponseDTO updateRole(final UUID id, final RoleRequestDTO request) {
         Role role = roleRepository.findById(id)
@@ -61,6 +68,7 @@ public class RoleService {
         return mapToResponseDTO(roleRepository.save(role));
     }
 
+    @PreAuthorize(Authorities.ROLE_WRITE)
     @Transactional
     public void deleteRole(final UUID id) {
         if (!roleRepository.existsById(id)) {

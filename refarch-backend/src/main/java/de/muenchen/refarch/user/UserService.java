@@ -2,8 +2,10 @@ package de.muenchen.refarch.user;
 
 import de.muenchen.refarch.user.dto.UserRequestDTO;
 import de.muenchen.refarch.user.dto.UserResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ public class UserService {
     private static final String ALREADY_EXISTS_SUFFIX = " already exists";
     private final UserRepository userRepository;
 
+    @PreAuthorize(Authorities.USER_READ)
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -24,6 +27,7 @@ public class UserService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.USER_READ)
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(final UUID id) {
         return userRepository.findById(id)
@@ -31,6 +35,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.USER_WRITE)
     @Transactional
     public UserResponseDTO createUser(final UserRequestDTO request) {
         if (userRepository.existsByUsername(request.username())) {
@@ -53,6 +58,7 @@ public class UserService {
         return mapToResponseDTO(userRepository.save(user));
     }
 
+    @PreAuthorize(Authorities.USER_WRITE)
     @Transactional
     public UserResponseDTO updateUser(UUID id, UserRequestDTO requestDTO) {
         User user = userRepository.findById(id)
@@ -126,6 +132,7 @@ public class UserService {
         return mapToResponseDTO(user);
     }
 
+    @PreAuthorize(Authorities.USER_WRITE)
     @Transactional
     public void deleteUser(final UUID id) {
         if (!userRepository.existsById(id)) {

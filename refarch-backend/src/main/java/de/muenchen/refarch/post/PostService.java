@@ -10,8 +10,10 @@ import de.muenchen.refarch.post.dto.PostRequestDTO;
 import de.muenchen.refarch.post.dto.PostResponseDTO;
 import de.muenchen.refarch.post.content.dto.PostContentRequestDTO;
 import de.muenchen.refarch.post.content.dto.PostContentResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class PostService {
     private final LinkService linkService;
     private final LanguageService languageService;
 
+    @PreAuthorize(Authorities.POST_READ)
     @Transactional(readOnly = true)
     public List<PostResponseDTO> findAll() {
         return postRepository.findAll().stream()
@@ -34,6 +37,7 @@ public class PostService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.POST_READ)
     @Transactional(readOnly = true)
     public PostResponseDTO findById(UUID id) {
         return postRepository.findById(id)
@@ -41,6 +45,7 @@ public class PostService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public PostResponseDTO create(PostRequestDTO request) {
         Link link = linkService.getById(request.linkId());
@@ -54,6 +59,7 @@ public class PostService {
         return mapToResponseDTO(postRepository.save(post));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public PostResponseDTO update(UUID id, PostRequestDTO request) {
         Post existingPost = postRepository.findById(id)
@@ -68,6 +74,7 @@ public class PostService {
         return mapToResponseDTO(postRepository.save(existingPost));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public void delete(UUID id) {
         Post post = postRepository.findById(id)
@@ -76,6 +83,7 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @PreAuthorize(Authorities.POST_READ)
     @Transactional(readOnly = true)
     public List<PostContentResponseDTO> findAllContentByPost(UUID postId) {
         Post post = postRepository.findById(postId)
@@ -85,6 +93,7 @@ public class PostService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.POST_READ)
     @Transactional(readOnly = true)
     public PostContentResponseDTO findContentByPostAndLanguage(UUID postId, UUID languageId) {
         Post post = postRepository.findById(postId)
@@ -97,6 +106,7 @@ public class PostService {
                         String.format("Content not found for post %s and language %s", postId, languageId)));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public PostContentResponseDTO createContent(UUID postId, PostContentRequestDTO request) {
         Post post = postRepository.findById(postId)
@@ -120,6 +130,7 @@ public class PostService {
         return mapToContentResponseDTO(postContentRepository.save(content));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public PostContentResponseDTO updateContent(UUID postId, UUID languageId, PostContentRequestDTO request) {
         Post post = postRepository.findById(postId)
@@ -138,6 +149,7 @@ public class PostService {
         return mapToContentResponseDTO(postContentRepository.save(existingContent));
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public void deleteContent(UUID postId, UUID languageId) {
         Post post = postRepository.findById(postId)
@@ -151,6 +163,7 @@ public class PostService {
         postContentRepository.delete(content);
     }
 
+    @PreAuthorize(Authorities.POST_WRITE)
     @Transactional
     public PostResponseDTO setPublished(UUID id, boolean published) {
         Post post = postRepository.findById(id)

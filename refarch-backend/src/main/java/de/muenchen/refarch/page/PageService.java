@@ -10,8 +10,10 @@ import de.muenchen.refarch.page.dto.PageRequestDTO;
 import de.muenchen.refarch.page.dto.PageResponseDTO;
 import de.muenchen.refarch.page.content.dto.PageContentRequestDTO;
 import de.muenchen.refarch.page.content.dto.PageContentResponseDTO;
+import de.muenchen.refarch.security.Authorities;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class PageService {
     private final LinkService linkService;
     private final LanguageService languageService;
 
+    @PreAuthorize(Authorities.PAGE_READ)
     @Transactional(readOnly = true)
     public List<PageResponseDTO> findAll() {
         return pageRepository.findAll().stream()
@@ -34,6 +37,7 @@ public class PageService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.PAGE_READ)
     @Transactional(readOnly = true)
     public PageResponseDTO findById(UUID id) {
         return pageRepository.findById(id)
@@ -41,6 +45,7 @@ public class PageService {
                 .orElseThrow(() -> new EntityNotFoundException("Page not found with id: " + id));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public PageResponseDTO create(PageRequestDTO request) {
         Link link = linkService.getById(request.linkId());
@@ -54,6 +59,7 @@ public class PageService {
         return mapToResponseDTO(pageRepository.save(page));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public PageResponseDTO update(UUID id, PageRequestDTO request) {
         Page existingPage = pageRepository.findById(id)
@@ -68,6 +74,7 @@ public class PageService {
         return mapToResponseDTO(pageRepository.save(existingPage));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public void delete(UUID id) {
         Page page = pageRepository.findById(id)
@@ -76,6 +83,7 @@ public class PageService {
         pageRepository.delete(page);
     }
 
+    @PreAuthorize(Authorities.PAGE_READ)
     @Transactional(readOnly = true)
     public List<PageContentResponseDTO> findAllContentByPage(UUID pageId) {
         Page page = pageRepository.findById(pageId)
@@ -85,6 +93,7 @@ public class PageService {
                 .toList();
     }
 
+    @PreAuthorize(Authorities.PAGE_READ)
     @Transactional(readOnly = true)
     public PageContentResponseDTO findContentByPageAndLanguage(UUID pageId, UUID languageId) {
         return pageContentRepository.findByPageIdAndLanguageId(pageId, languageId)
@@ -93,6 +102,7 @@ public class PageService {
                         String.format("Content not found for page %s and language %s", pageId, languageId)));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public PageContentResponseDTO createContent(UUID pageId, PageContentRequestDTO request) {
         Page page = pageRepository.findById(pageId)
@@ -116,6 +126,7 @@ public class PageService {
         return mapToContentResponseDTO(pageContentRepository.save(content));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public PageContentResponseDTO updateContent(UUID pageId, UUID languageId, PageContentRequestDTO request) {
         PageContent existingContent = pageContentRepository.findByPageIdAndLanguageId(pageId, languageId)
@@ -130,6 +141,7 @@ public class PageService {
         return mapToContentResponseDTO(pageContentRepository.save(existingContent));
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public void deleteContent(UUID pageId, UUID languageId) {
         Page page = pageRepository.findById(pageId)
@@ -142,6 +154,7 @@ public class PageService {
         pageContentRepository.delete(content);
     }
 
+    @PreAuthorize(Authorities.PAGE_WRITE)
     @Transactional
     public PageResponseDTO setPublished(UUID id, boolean published) {
         Page page = pageRepository.findById(id)
