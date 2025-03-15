@@ -103,6 +103,9 @@ public class UserBioService {
     @PreAuthorize("hasRole('ROLE_ADMIN') or @userSecurity.isCurrentUser(#userId)")
     @Transactional
     public void deleteUserBio(final UUID id) {
+        if (!userBioRepository.existsById(id)) {
+            throw new EntityNotFoundException("User bio not found with id: " + id);
+        }
         userBioRepository.deleteById(id);
     }
 

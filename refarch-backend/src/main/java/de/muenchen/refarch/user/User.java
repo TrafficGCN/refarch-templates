@@ -36,6 +36,7 @@ public class User extends BaseEntity {
     @NotBlank
     @Email
     @Column(nullable = false)
+    @JsonIgnore // Never serialize the email
     private String email;
 
     @NotBlank

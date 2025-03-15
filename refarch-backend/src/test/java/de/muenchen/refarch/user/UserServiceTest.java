@@ -63,7 +63,6 @@ class UserServiceTest {
         responseDTO = new UserResponseDTO(
                 userId,
                 "testuser",
-                "test@example.com",
                 "Test",
                 "User",
                 "Dr.",

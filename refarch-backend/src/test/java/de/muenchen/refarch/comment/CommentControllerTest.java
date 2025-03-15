@@ -89,7 +89,6 @@ class CommentControllerTest {
         userResponseDTO = new UserResponseDTO(
                 userId,
                 "testUser",
-                "test@example.com",
                 "Test",
                 "User",
                 "Mr.",

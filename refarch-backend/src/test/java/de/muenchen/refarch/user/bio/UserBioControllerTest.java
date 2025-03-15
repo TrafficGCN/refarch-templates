@@ -112,7 +112,6 @@ class UserBioControllerTest {
         UserResponseDTO userResponseDTO = new UserResponseDTO(
                 testUser.getId(),
                 testUser.getUsername(),
-                testUser.getEmail(),
                 testUser.getFirstName(),
                 testUser.getLastName(),
                 testUser.getTitle(),

@@ -232,6 +232,7 @@ class UserBioServiceTest {
 
         userBioService.deleteUserBio(bioId);
 
+        verify(userBioRepository).existsById(bioId);
         verify(userBioRepository).deleteById(bioId);
     }
 

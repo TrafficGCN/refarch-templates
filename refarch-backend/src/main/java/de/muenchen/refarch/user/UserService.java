@@ -145,7 +145,6 @@ public class UserService {
         return new UserResponseDTO(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getTitle(),
