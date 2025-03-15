@@ -16,7 +16,8 @@ public record GlobalSettingsResponseDTO(
         String contactEmail,
         String metaDescription,
         Integer maxItemsPerPage,
-        Boolean ssoEnabled,
+        Boolean ssoAuthEnabled,
+        Boolean passwordAuthEnabled,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

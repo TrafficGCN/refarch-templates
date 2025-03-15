@@ -83,6 +83,7 @@ class GlobalSettingsControllerTest {
                 "Test website description",
                 20,
                 false,
+                true,
                 now,
                 now);
 
@@ -98,7 +99,8 @@ class GlobalSettingsControllerTest {
                 "contact@example.com",
                 "Test website description",
                 20,
-                false);
+                false,
+                true);
     }
 
     @Test
@@ -112,7 +114,8 @@ class GlobalSettingsControllerTest {
                 .andExpect(jsonPath("$.websiteName").value("Test Website"))
                 .andExpect(jsonPath("$.sessionDurationMinutes").value(480))
                 .andExpect(jsonPath("$.globalCommentsEnabled").value(true))
-                .andExpect(jsonPath("$.ssoEnabled").value(false));
+                .andExpect(jsonPath("$.ssoAuthEnabled").value(false))
+                .andExpect(jsonPath("$.passwordAuthEnabled").value(true));
     }
 
     @Test
@@ -153,7 +156,8 @@ class GlobalSettingsControllerTest {
                 "contact@example.com",
                 "Test website description",
                 0, // Invalid: maxItemsPerPage must be positive
-                null // Invalid: ssoEnabled is required
+                null, // Invalid: ssoAuthEnabled is required
+                null // Invalid: passwordAuthEnabled is required
         );
 
         mockMvc.perform(put("/api/settings")

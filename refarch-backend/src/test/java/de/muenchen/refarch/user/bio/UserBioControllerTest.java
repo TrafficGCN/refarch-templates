@@ -147,7 +147,8 @@ class UserBioControllerTest {
                 "test@example.com", // contactEmail
                 "Test description", // metaDescription
                 50, // maxItemsPerPage
-                false, // ssoEnabled
+                false, // ssoAuthEnabled
+                true, // passwordAuthEnabled
                 LocalDateTime.now(), // createdAt
                 LocalDateTime.now() // updatedAt
         );

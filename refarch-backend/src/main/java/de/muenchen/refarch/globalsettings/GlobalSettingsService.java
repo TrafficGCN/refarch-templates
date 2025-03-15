@@ -9,8 +9,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class GlobalSettingsService {
@@ -42,7 +40,8 @@ public class GlobalSettingsService {
         settings.setContactEmail(request.contactEmail());
         settings.setMetaDescription(request.metaDescription());
         settings.setMaxItemsPerPage(request.maxItemsPerPage());
-        settings.setSsoEnabled(request.ssoEnabled());
+        settings.setSsoAuthEnabled(request.ssoAuthEnabled());
+        settings.setPasswordAuthEnabled(request.passwordAuthEnabled());
 
         GlobalSettings savedSettings = globalSettingsRepository.save(settings);
         eventPublisher.publishEvent(new GlobalSettingsChangedEvent(savedSettings));
@@ -63,7 +62,8 @@ public class GlobalSettingsService {
                 settings.getContactEmail(),
                 settings.getMetaDescription(),
                 settings.getMaxItemsPerPage(),
-                settings.getSsoEnabled(),
+                settings.getSsoAuthEnabled(),
+                settings.getPasswordAuthEnabled(),
                 settings.getCreatedAt(),
                 settings.getUpdatedAt());
     }

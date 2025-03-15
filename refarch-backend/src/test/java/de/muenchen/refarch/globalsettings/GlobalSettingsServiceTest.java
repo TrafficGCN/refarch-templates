@@ -58,7 +58,8 @@ class GlobalSettingsServiceTest {
         settings.setContactEmail("contact@example.com");
         settings.setMetaDescription("Test website description");
         settings.setMaxItemsPerPage(20);
-        settings.setSsoEnabled(false);
+        settings.setSsoAuthEnabled(false);
+        settings.setPasswordAuthEnabled(true);
         settings.setCreatedAt(now);
         settings.setUpdatedAt(now);
 
@@ -74,7 +75,8 @@ class GlobalSettingsServiceTest {
                 "contact@example.com",
                 "Test website description",
                 20,
-                false);
+                false,
+                true);
     }
 
     @Test
@@ -94,7 +96,8 @@ class GlobalSettingsServiceTest {
         assertThat(result.contactEmail()).isEqualTo("contact@example.com");
         assertThat(result.metaDescription()).isEqualTo("Test website description");
         assertThat(result.maxItemsPerPage()).isEqualTo(20);
-        assertThat(result.ssoEnabled()).isFalse();
+        assertThat(result.ssoAuthEnabled()).isFalse();
+        assertThat(result.passwordAuthEnabled()).isTrue();
         assertThat(result.createdAt()).isEqualTo(now);
         assertThat(result.updatedAt()).isEqualTo(now);
     }

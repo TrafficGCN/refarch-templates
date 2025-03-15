@@ -12,7 +12,8 @@ CREATE TABLE global_settings (
     contact_email VARCHAR(255),
     meta_description VARCHAR(255),
     max_items_per_page INTEGER NOT NULL DEFAULT 20,
-    sso_enabled BOOLEAN NOT NULL DEFAULT false,
+    sso_auth_enabled BOOLEAN NOT NULL DEFAULT false,
+    password_auth_enabled BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP
 );

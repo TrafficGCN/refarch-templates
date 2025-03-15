@@ -21,7 +21,7 @@ public class DynamicSecurityService {
     // Initialize the status on startup
     @PostConstruct
     public void init() {
-        ssoEnabled = globalSettingsService.getCurrentSettings().ssoEnabled();
+        ssoEnabled = globalSettingsService.getCurrentSettings().ssoAuthEnabled();
         log.info("Initial SSO status: {}", ssoEnabled);
     }
 
@@ -31,7 +31,7 @@ public class DynamicSecurityService {
 
     @EventListener(GlobalSettingsChangedEvent.class)
     public void onGlobalSettingsChanged(GlobalSettingsChangedEvent event) {
-        boolean newSsoEnabled = event.getNewSettings().getSsoEnabled();
+        boolean newSsoEnabled = event.getNewSettings().getSsoAuthEnabled();
         if (ssoEnabled != newSsoEnabled) {
             log.info("SSO status changed from {} to {}", ssoEnabled, newSsoEnabled);
             ssoEnabled = newSsoEnabled;

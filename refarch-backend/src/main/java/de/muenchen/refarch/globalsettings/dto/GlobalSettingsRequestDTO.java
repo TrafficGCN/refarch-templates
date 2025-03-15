@@ -16,5 +16,6 @@ public record GlobalSettingsRequestDTO(
         String contactEmail,
         String metaDescription,
         @NotNull @Positive Integer maxItemsPerPage,
-        @NotNull Boolean ssoEnabled) {
+        @NotNull Boolean ssoAuthEnabled,
+        @NotNull Boolean passwordAuthEnabled) {
 }

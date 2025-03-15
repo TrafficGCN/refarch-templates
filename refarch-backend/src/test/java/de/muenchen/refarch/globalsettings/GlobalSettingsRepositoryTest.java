@@ -48,7 +48,8 @@ class GlobalSettingsRepositoryTest {
         settings.setMaxUploadSizeMb(10);
         settings.setDefaultLanguage("en");
         settings.setMaxItemsPerPage(20);
-        settings.setSsoEnabled(false);
+        settings.setSsoAuthEnabled(false);
+        settings.setPasswordAuthEnabled(true);
         entityManager.persist(settings);
         entityManager.flush();
 
@@ -64,7 +65,8 @@ class GlobalSettingsRepositoryTest {
         assertThat(foundSettings.getMaxUploadSizeMb()).isEqualTo(10);
         assertThat(foundSettings.getDefaultLanguage()).isEqualTo("en");
         assertThat(foundSettings.getMaxItemsPerPage()).isEqualTo(20);
-        assertThat(foundSettings.getSsoEnabled()).isFalse();
+        assertThat(foundSettings.getSsoAuthEnabled()).isFalse();
+        assertThat(foundSettings.getPasswordAuthEnabled()).isTrue();
     }
 
     @Test
@@ -78,7 +80,8 @@ class GlobalSettingsRepositoryTest {
         settings.setMaxUploadSizeMb(10);
         settings.setDefaultLanguage("en");
         settings.setMaxItemsPerPage(20);
-        settings.setSsoEnabled(false);
+        settings.setSsoAuthEnabled(false);
+        settings.setPasswordAuthEnabled(true);
 
         // Save settings
         GlobalSettings savedSettings = globalSettingsRepository.save(settings);
@@ -92,7 +95,8 @@ class GlobalSettingsRepositoryTest {
         GlobalSettings persistedSettings = entityManager.find(GlobalSettings.class, savedSettings.getId());
         assertThat(persistedSettings).isNotNull();
         assertThat(persistedSettings.getWebsiteName()).isEqualTo("Test Website");
-        assertThat(persistedSettings.getSsoEnabled()).isFalse();
+        assertThat(persistedSettings.getSsoAuthEnabled()).isFalse();
+        assertThat(persistedSettings.getPasswordAuthEnabled()).isTrue();
     }
 
     @Test
@@ -106,24 +110,28 @@ class GlobalSettingsRepositoryTest {
         settings.setMaxUploadSizeMb(10);
         settings.setDefaultLanguage("en");
         settings.setMaxItemsPerPage(20);
-        settings.setSsoEnabled(false);
+        settings.setSsoAuthEnabled(false);
+        settings.setPasswordAuthEnabled(true);
         entityManager.persist(settings);
         entityManager.flush();
 
         // Update settings
         settings.setWebsiteName("Updated Name");
-        settings.setSsoEnabled(true);
+        settings.setSsoAuthEnabled(true);
+        settings.setPasswordAuthEnabled(false);
         GlobalSettings updatedSettings = globalSettingsRepository.save(settings);
 
         // Verify update
         assertThat(updatedSettings.getWebsiteName()).isEqualTo("Updated Name");
-        assertThat(updatedSettings.getSsoEnabled()).isTrue();
+        assertThat(updatedSettings.getSsoAuthEnabled()).isTrue();
+        assertThat(updatedSettings.getPasswordAuthEnabled()).isFalse();
         assertThat(updatedSettings.getUpdatedAt()).isNotNull();
         assertThat(updatedSettings.getUpdatedAt()).isAfterOrEqualTo(updatedSettings.getCreatedAt());
 
         // Verify persistence
         GlobalSettings persistedSettings = entityManager.find(GlobalSettings.class, settings.getId());
         assertThat(persistedSettings.getWebsiteName()).isEqualTo("Updated Name");
-        assertThat(persistedSettings.getSsoEnabled()).isTrue();
+        assertThat(persistedSettings.getSsoAuthEnabled()).isTrue();
+        assertThat(persistedSettings.getPasswordAuthEnabled()).isFalse();
     }
 }

@@ -70,8 +70,12 @@ public class GlobalSettings {
     private Integer maxItemsPerPage;
 
     @NotNull
-    @Column(name = "sso_enabled", nullable = false)
-    private Boolean ssoEnabled;
+    @Column(name = "sso_auth_enabled", nullable = false)
+    private Boolean ssoAuthEnabled;
+
+    @NotNull
+    @Column(name = "password_auth_enabled", nullable = false)
+    private Boolean passwordAuthEnabled;
 
     @NotNull
     @Column(name = "created_at", nullable = false)
