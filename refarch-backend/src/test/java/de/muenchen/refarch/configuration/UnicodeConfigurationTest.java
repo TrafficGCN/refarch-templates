@@ -2,10 +2,11 @@ package de.muenchen.refarch.configuration;
 
 import de.muenchen.refarch.MicroServiceApplication;
 import de.muenchen.refarch.TestConstants;
-import de.muenchen.refarch.theentity.TheEntity;
-import de.muenchen.refarch.theentity.TheEntityRepository;
-import de.muenchen.refarch.theentity.dto.TheEntityRequestDTO;
-import de.muenchen.refarch.theentity.dto.TheEntityResponseDTO;
+import de.muenchen.refarch.link.Link;
+import de.muenchen.refarch.link.LinkRepository;
+import de.muenchen.refarch.link.LinkScope;
+import de.muenchen.refarch.link.dto.LinkRequestDTO;
+import de.muenchen.refarch.link.dto.LinkResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.net.URI;
 
@@ -30,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @ActiveProfiles(profiles = { SPRING_TEST_PROFILE, SPRING_NO_SECURITY_PROFILE })
+@AutoConfigureMockMvc
 class UnicodeConfigurationTest {
 
     @Container
@@ -38,47 +41,52 @@ class UnicodeConfigurationTest {
     private static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName.parse(TestConstants.TESTCONTAINERS_POSTGRES_IMAGE));
 
-    private static final String ENTITY_ENDPOINT_URL = "/theEntity";
+    private static final String LINK_ENDPOINT_URL = "/links";
 
     /**
      * Decomposed string:
      * String "Ä-é" represented with unicode letters "A◌̈-e◌́"
      */
-    private static final String TEXT_ATTRIBUTE_DECOMPOSED = "\u0041\u0308-\u0065\u0301";
+    private static final String NAME_ATTRIBUTE_DECOMPOSED = "\u0041\u0308-\u0065\u0301";
 
     /**
      * Composed string:
      * String "Ä-é" represented with unicode letters "Ä-é".
      */
-    private static final String TEXT_ATTRIBUTE_COMPOSED = "\u00c4-\u00e9";
+    private static final String NAME_ATTRIBUTE_COMPOSED = "\u00c4-\u00e9";
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private TheEntityRepository theEntityRepository;
+    private LinkRepository linkRepository;
 
     @Test
     void testForNfcNormalization() {
         // Given
-        // Persist entity with decomposed string.
-        final TheEntityRequestDTO theEntityRequestDto = new TheEntityRequestDTO(TEXT_ATTRIBUTE_DECOMPOSED);
+        // Persist link with decomposed string in name field
+        final LinkRequestDTO linkRequestDto = new LinkRequestDTO(
+                "https://example.com",
+                NAME_ATTRIBUTE_DECOMPOSED,
+                null,
+                null,
+                "test",
+                LinkScope.INTERNAL);
 
         // When
-        final TheEntityResponseDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL), theEntityRequestDto, TheEntityResponseDTO.class)
+        final LinkResponseDTO response = testRestTemplate.postForEntity(URI.create(LINK_ENDPOINT_URL), linkRequestDto, LinkResponseDTO.class)
                 .getBody();
-        final TheEntity theEntity = theEntityRepository.findById(response.id()).orElse(null);
+        final Link link = linkRepository.findById(response.id()).orElse(null);
 
         // Then
-        // Check whether response contains a composed string.
-        assertNotNull(response.textAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED, response.textAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), response.textAttribute().length());
+        // Check whether response contains a composed string
+        assertNotNull(response.name());
+        assertEquals(NAME_ATTRIBUTE_COMPOSED, response.name());
+        assertEquals(NAME_ATTRIBUTE_COMPOSED.length(), response.name().length());
 
-        // Check persisted entity contains a composed string via JPA repository.
-        assertNotNull(theEntity.getTextAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED, theEntity.getTextAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), theEntity.getTextAttribute().length());
+        // Check persisted entity contains a composed string via JPA repository
+        assertNotNull(link.getName());
+        assertEquals(NAME_ATTRIBUTE_COMPOSED, link.getName());
+        assertEquals(NAME_ATTRIBUTE_COMPOSED.length(), link.getName().length());
     }
-
 }

@@ -18,6 +18,21 @@ Key technologies used in the templates include:
 ::: danger IMPORTANT
 If you are developing locally, you will need to have Docker installed on your system and the stack running at all times.
 Also make sure you have `kubernetes.docker.internal` in your hosts file. This should normally be done automatically by the Docker installation.
+
+If you encounter DNS resolution issues or authentication problems, you may need to manually add the following entries to your hosts file:
+```bash
+# Docker development domains
+127.0.0.1 kubernetes.docker.internal
+127.0.0.1 host.docker.internal
+127.0.0.1 keycloak
+```
+
+On Unix-based systems (Linux, macOS), you can add these entries with:
+```bash
+echo -e "\n# Docker development domains\n127.0.0.1 kubernetes.docker.internal\n127.0.0.1 host.docker.internal\n127.0.0.1 keycloak" | sudo tee -a /etc/hosts
+```
+
+On Windows, edit the file `C:\Windows\System32\drivers\etc\hosts` as administrator.
 :::
 
 Inside the `stack` folder, you will find a `docker-compose.yml` file that will spin up everything needed for local development.
