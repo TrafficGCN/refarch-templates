@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestConfig.class)
 class GlobalSettingsControllerTest {
 
-    private static final String API_SETTINGS = "/api/settings";
+    private static final String API_SETTINGS = "/settings";
     private static final String TEST_LOGO_URL = "https://example.com/logo.png";
     private static final String TEST_WEBSITE_NAME = "Test Website";
     private static final String TEST_LANGUAGE = "en";
