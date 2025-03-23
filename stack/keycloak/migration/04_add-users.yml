@@ -13,22 +13,42 @@ changes:
       name: none
       password: "none"
   - addUser:
-      name: reader
-      lastName: reader
-      firstName: reader
+      name: admin
+      lastName: admin
+      firstName: admin
       enabled: true
       emailVerified: true
-      email: reader@reader.com
+      email: admin@admin.com
   - updateUserPassword:
-      name: reader
-      password: "reader"
+      name: admin
+      password: "admin"
   - addUser:
-      name: writer
-      lastName: writer
-      firstName: writer
+      name: editor
+      lastName: editor
+      firstName: editor
       enabled: true
       emailVerified: true
-      email: writer@writer.com
+      email: editor@editor.com
   - updateUserPassword:
-      name: writer
-      password: "writer"
+      name: editor
+      password: "editor"
+  - addUser:
+      name: moderator
+      lastName: moderator
+      firstName: moderator
+      enabled: true
+      emailVerified: true
+      email: moderator@moderator.com
+  - updateUserPassword:
+      name: moderator
+      password: "moderator"
+  - addUser:
+      name: user
+      lastName: user
+      firstName: user
+      enabled: true
+      emailVerified: true
+      email: user@user.com
+  - updateUserPassword:
+      name: user
+      password: "user"

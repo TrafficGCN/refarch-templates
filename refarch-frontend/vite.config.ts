@@ -40,6 +40,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": "http://localhost:8083",
         "/actuator": "http://localhost:8083",
+        "/api/s3": "http://localhost:9000",
       },
       allowedHosts: ["host.docker.internal"], // required to use frontend behind proxy (e.g. API Gateway)
       headers: {
