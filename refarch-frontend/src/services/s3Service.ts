@@ -22,10 +22,7 @@ export const s3Service = {
   },
 
   // List files in a bucket
-  listFiles: async (
-    bucket: string,
-    prefix: string = ""
-  ): Promise<S3Object[]> => {
+  listFiles: async (bucket: string, prefix = ""): Promise<S3Object[]> => {
     const response = await axios.get(
       `${S3_API_BASE}/api/v1/buckets/${bucket}/objects`,
       {
