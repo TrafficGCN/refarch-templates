@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const S3_API_BASE = '/api/s3';
+const S3_API_BASE = "/api/s3";
 
 export interface S3Object {
   name: string;
@@ -22,40 +22,53 @@ export const s3Service = {
   },
 
   // List files in a bucket
-  listFiles: async (bucket: string, prefix: string = ''): Promise<S3Object[]> => {
-    const response = await axios.get(`${S3_API_BASE}/api/v1/buckets/${bucket}/objects`, {
-      params: { prefix }
-    });
+  listFiles: async (
+    bucket: string,
+    prefix: string = ""
+  ): Promise<S3Object[]> => {
+    const response = await axios.get(
+      `${S3_API_BASE}/api/v1/buckets/${bucket}/objects`,
+      {
+        params: { prefix },
+      }
+    );
     return response.data.objects;
   },
 
   // Get file details
   getFileDetails: async (bucket: string, path: string): Promise<S3Object> => {
-    const response = await axios.get(`${S3_API_BASE}/api/v1/buckets/${bucket}/objects/download`, {
-      params: { 
-        prefix: path,
-        preview: true
+    const response = await axios.get(
+      `${S3_API_BASE}/api/v1/buckets/${bucket}/objects/download`,
+      {
+        params: {
+          prefix: path,
+          preview: true,
+        },
       }
-    });
+    );
     return response.data;
   },
 
   // Upload a file
-  uploadFile: async (bucket: string, file: File, path: string): Promise<void> => {
+  uploadFile: async (
+    bucket: string,
+    file: File,
+    path: string
+  ): Promise<void> => {
     const formData = new FormData();
-    formData.append('file', file);
-    
+    formData.append("file", file);
+
     await axios.put(`${S3_API_BASE}/${bucket}/${path}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        "Content-Type": "multipart/form-data",
+      },
     });
   },
 
   // Download a file
   downloadFile: async (bucket: string, path: string): Promise<Blob> => {
     const response = await axios.get(`${S3_API_BASE}/${bucket}/${path}`, {
-      responseType: 'blob'
+      responseType: "blob",
     });
     return response.data;
   },
@@ -63,5 +76,5 @@ export const s3Service = {
   // Delete a file
   deleteFile: async (bucket: string, path: string): Promise<void> => {
     await axios.delete(`${S3_API_BASE}/${bucket}/${path}`);
-  }
-}; 
+  },
+};
