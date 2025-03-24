@@ -61,7 +61,8 @@ public class SecurityConfiguration {
                             AntPathRequestMatcher.antMatcher("/actuator/health/readiness"),
                             AntPathRequestMatcher.antMatcher("/actuator/metrics"),
                             AntPathRequestMatcher.antMatcher("/auth/login"),
-                            AntPathRequestMatcher.antMatcher("/auth/logout"))
+                            AntPathRequestMatcher.antMatcher("/auth/logout"),
+                            AntPathRequestMatcher.antMatcher("/settings"))
                     .permitAll()
                     .anyRequest()
                     .authenticated());

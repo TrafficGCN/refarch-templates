@@ -19,6 +19,11 @@ public class LinkController {
 
     private final LinkService linkService;
 
+    @GetMapping("/internal")
+    public ResponseEntity<List<LinkResponseDTO>> getInternalLinks() {
+        return ResponseEntity.ok(linkService.getInternalLinks());
+    }
+
     @GetMapping
     public ResponseEntity<List<LinkResponseDTO>> getAllLinks() {
         return ResponseEntity.ok(linkService.getAllLinks());

@@ -44,7 +44,7 @@ public class DynamicAuthenticationFilter extends OncePerRequestFilter {
             "/actuator/metrics",
             "/auth/login",
             "/auth/logout",
-            "/api/settings",
+            "/settings",
             "/users");
 
     @Override

@@ -70,6 +70,14 @@ public class LinkService {
         linkRepository.deleteById(id);
     }
 
+    @PreAuthorize(Authorities.LINK_READ)
+    @Transactional(readOnly = true)
+    public List<LinkResponseDTO> getInternalLinks() {
+        return linkRepository.findByScope(LinkScope.INTERNAL).stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
     private LinkResponseDTO mapToResponseDTO(final Link link) {
         return new LinkResponseDTO(
                 link.getId(),
